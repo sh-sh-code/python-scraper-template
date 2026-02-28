@@ -1,0 +1,4 @@
+rank,title,url,item_id,points,comments_count,scraped_at,source
+1,Show HN: A open-source tool for generating UIs with AI,https://github.com/example/project,39012345,284,93,2026-02-28T12:00:00+00:00,https://news.ycombinator.com
+2,Why SQLite is so great for the edge,https://example.com/sqlite-edge,39012346,178,62,2026-02-28T12:00:00+00:00,https://news.ycombinator.com
+3,"Launch HN: Acme Corp (YC W26) – Simplify your data pipeline",,39012347,112,45,2026-02-28T12:00:00+00:00,https://news.ycombinator.com

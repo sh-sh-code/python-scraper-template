@@ -1,0 +1,32 @@
+[
+  {
+    "title": "Show HN: A open-source tool for generating UIs with AI",
+    "url": "https://github.com/example/project",
+    "rank": 1,
+    "item_id": 39012345,
+    "points": 284,
+    "comments_count": 93,
+    "scraped_at": "2026-02-28T12:00:00+00:00",
+    "source": "https://news.ycombinator.com"
+  },
+  {
+    "title": "Why SQLite is so great for the edge",
+    "url": "https://example.com/sqlite-edge",
+    "rank": 2,
+    "item_id": 39012346,
+    "points": 178,
+    "comments_count": 62,
+    "scraped_at": "2026-02-28T12:00:00+00:00",
+    "source": "https://news.ycombinator.com"
+  },
+  {
+    "title": "Launch HN: Acme Corp (YC W26) – Simplify your data pipeline",
+    "url": null,
+    "rank": 3,
+    "item_id": 39012347,
+    "points": 112,
+    "comments_count": 45,
+    "scraped_at": "2026-02-28T12:00:00+00:00",
+    "source": "https://news.ycombinator.com"
+  }
+]
