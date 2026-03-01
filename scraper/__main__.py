@@ -1,5 +1,5 @@
 """Allow running the package with: python -m scraper"""
 
-from scraper.cli import main
+from scraper.main import main
 
 main()

@@ -1,44 +1,24 @@
-"""Export scraped items to JSON and/or CSV."""
+"""Export scraped items to a date-partitioned JSON file."""
 
 from __future__ import annotations
 
-import csv
 import json
 from pathlib import Path
+from typing import Any
 
-from scraper.models import HNItem
-from scraper.utils import get_logger
+from scraper.logger import setup_logger
 
-log = get_logger(__name__)
-
-CSV_COLUMNS = [
-    "rank",
-    "title",
-    "url",
-    "item_id",
-    "points",
-    "comments_count",
-    "scraped_at",
-    "source",
-]
+log = setup_logger(__name__)
 
 
-def export_json(items: list[HNItem], path: Path) -> Path:
-    """Write items to a JSON file and return the path."""
+def export_json(items: list[dict[str, Any]], path: Path) -> Path:
+    """Write *items* as pretty-printed JSON to *path*.
+
+    Parent directories are created automatically.
+    Returns the resolved output path.
+    """
     path.parent.mkdir(parents=True, exist_ok=True)
-    data = [item.to_dict() for item in items]
-    path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n")
-    log.info("Exported %d items → %s", len(items), path)
-    return path
-
-
-def export_csv(items: list[HNItem], path: Path) -> Path:
-    """Write items to a CSV file and return the path."""
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=CSV_COLUMNS, extrasaction="ignore")
-        writer.writeheader()
-        for item in items:
-            writer.writerow(item.to_dict())
+    payload = json.dumps(items, indent=2, ensure_ascii=False) + "\n"
+    path.write_text(payload, encoding="utf-8")
     log.info("Exported %d items → %s", len(items), path)
     return path

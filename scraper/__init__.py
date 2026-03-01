@@ -1,3 +1,3 @@
-"""python-scraper-template — A production-ready web scraper for Hacker News."""
+"""scraper-scheduler-pipeline — Cron-ready web scraper with date-partitioned output."""
 
-__version__ = "0.1.0"
+__version__ = "1.0.0"
