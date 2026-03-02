@@ -24,6 +24,8 @@ Thumbs.db
 # Env
 .env
 
-# Logs are tracked via .gitkeep only
-logs/*
-!logs/.gitkeep
+# Database
+*.db
+
+# Logs
+*.log
