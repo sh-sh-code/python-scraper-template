@@ -161,13 +161,13 @@ make test
 
 ## For Freelance Use Cases
 
-This starter is designed with real client work in mind:
+This template is built to accelerate real scraping projects:
 
-- **MVP backends** — Spin up a working API for a new product in hours, not days. The CRUD structure covers most data-management requirements out of the box.
-- **Internal tools** — Build admin dashboards, inventory trackers, or reporting APIs. The Pydantic validation layer keeps data clean from day one.
-- **Extendable foundation** — Need auth, file uploads, or a PostgreSQL migration? Each concern lives in its own module, so new features slot in without refactoring.
-- **Client-ready confidence** — 16 automated tests with per-test DB isolation mean changes ship without regressions. Structured request-id logging simplifies production debugging.
-- **Quick handoff** — Swagger UI auto-generates interactive docs, so stakeholders and frontend teams can explore the API without extra documentation effort.
+- **One-off data collection** — Hand a client clean JSON/CSV within hours. The parser is null-safe, so partial page changes won't crash the job.
+- **Customizable target** — Swap out `parse.py` and point `fetch.py` at any public site. The retry-with-backoff and timeout logic carries over unchanged.
+- **Structured, deliverable output** — Clients get consistently formatted data with timestamps and source metadata — ready for spreadsheets, dashboards, or database import.
+- **Small-to-mid scale** — Handles front-page-level scraping cleanly. For larger volumes, the modular layout makes it straightforward to add pagination, proxies, or async I/O.
+- **Confidence on delivery** — Pytest suite validates parsing logic against realistic HTML fixtures, reducing the risk of silent breakage.
 
 ## License
 
