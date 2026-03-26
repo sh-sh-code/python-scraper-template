@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(make test)",
+      "Bash(make run)",
+      "Bash(make clean)",
+      "Bash(pytest *)",
+      "Bash(pip install -r requirements.txt)",
+      "Bash(python -m pytest *)"
+    ],
+    "deny": [
+      "Bash(rm -rf /)",
+      "Bash(rm -rf ~)",
+      "Bash(git push --force *)",
+      "Bash(git push * --force *)",
+      "Read(./.env)",
+      "Read(./.env.*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c \"import json, sys; d=json.load(sys.stdin); p=d.get('tool_input',{}).get('file_path',''); sys.exit(2) if any(x in p for x in ['.env','.env.','secrets/','credentials']) else sys.exit(0)\""
+          }
+        ],
+        "description": "Block writes to sensitive files (.env, secrets, credentials)"
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c \"import json,sys,re; d=json.load(sys.stdin); cmd=d.get('tool_input',{}).get('command',''); patterns=[r'rm\\s+-rf\\s+[/~]', r'git\\s+push\\s+.*--force', r'DROP\\s+TABLE', r'DROP\\s+DATABASE']; sys.exit(2) if any(re.search(p,cmd,re.I) for p in patterns) else sys.exit(0)\""
+          }
+        ],
+        "description": "Block dangerous bash commands (rm -rf /, force push, DROP TABLE)"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c \"import json,sys,subprocess; d=json.load(sys.stdin); p=d.get('tool_input',{}).get('file_path',''); ext=p.rsplit('.',1)[-1] if '.' in p else ''; sys.exit(0)\""
+          }
+        ],
+        "description": "Post-write hook placeholder — extend with formatter (e.g., black, ruff)"
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Claude Code notification received' > /dev/null"
+          }
+        ],
+        "description": "Notification placeholder — replace with notify-send, terminal-notifier, etc."
+      }
+    ]
+  }
+}

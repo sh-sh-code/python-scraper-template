@@ -13,13 +13,17 @@
 ## Workflow Principles
 
 ### Context Engineering（コンテキストエンジニアリング）
-- プロンプトの工夫だけでなく、プロジェクト全体の「環境」として知識を蓄積する
-- CLAUDE.md → プロジェクト固有のルール、~/.claude/CLAUDE.md → 個人の横断的ルール
+プロンプトの工夫ではなく「環境」として知識を蓄積する：
+- **CLAUDE.md** → 常に適用されるルール（プロジェクト固有 or 個人横断）
+- **Skills** → 特定の作業時だけ必要な手順
+- **Hooks** → 確定的に実行される品質保証（CLAUDE.md指示=約80%遵守、Hooks=100%実行）
+- **Task Diary** → セッション横断の知識蓄積 → 定期的にCLAUDE.mdに統合
 
 ### Plan → Build → Verify
 1. 非自明なタスク（3ステップ以上）は Plan Mode で設計してから実装
-2. テストを先に書く or 既存テストの通過を確認
-3. `make test` / `pytest` / `npm test` で検証してからコミット
+2. 擬似コード → テスト → 実装 → 検証（TDDフロー）
+3. テストは「Claudeが自分の仕事を自己検証できる仕組み」
+4. `make test` / `pytest` / `npm test` で検証してからコミット
 
 ### Context Window Management
 - タスク切り替え時は `/clear` でリセット
@@ -27,10 +31,16 @@
 - `/compact` で圧縮しつつ重要な情報を保持
 - 大きなファイルは必要な部分だけ読む
 
+### Subagent 活用パターン
+まとまった規模のコード改修には並列サブエージェントを活用：
+- 基本: タスクリスト → 複数サブエージェントで並列実行
+- 対立検証: Engineer vs Auditor で異なる視点から議論させて盲点を発見
+- レビュー: 規約チェック・バグスキャン・セキュリティ監査を並列実行
+
 ### Task Diary（タスク日記）
-タスク完了時に学びを記録：
-- 何を試みたか / 何がうまくいったか / 何が失敗したか / 次回への教訓
-- 数セッション分溜まったらCLAUDE.mdに統合して全セッションを底上げ
+タスク完了時に学びを記録 → 複利的に蓄積：
+- Session 1-2: Task Diary に個別の学びを記録
+- Session 3+: 蓄積された学びを CLAUDE.md に統合 → 全セッションが賢くなる
 
 ## Code Quality Defaults
 
@@ -45,6 +55,24 @@
 - コミットは atomic に（1つの論理的変更 = 1コミット）
 - `.env`, credentials, secrets をコミットしない
 - PR 作成時はテスト通過を確認
+
+## Hooks Setup Guide
+
+新しいプロジェクトで `.claude/settings.json` に設定すべき推奨 Hooks：
+
+### 1. センシティブファイル保護（PreToolUse: Edit|Write）
+`.env`, `secrets/`, `credentials` への書き込みを exit 2 でブロック
+
+### 2. 危険コマンドブロック（PreToolUse: Bash）
+`rm -rf /`, `git push --force`, `DROP TABLE` 等を exit 2 でブロック
+
+### 3. 自動フォーマット（PostToolUse: Edit|Write）
+ファイル編集後にフォーマッター自動実行（black, prettier, ruff 等）
+
+### 4. 通知（Notification）
+Claude が入力待ちの時にデスクトップ通知を送る
+
+> 詳細な設定例は `.claude-templates/settings.json.template` を参照
 
 ## Recommended Skills (npx skills add)
 

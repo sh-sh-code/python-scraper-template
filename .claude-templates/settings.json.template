@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+
+  "_comment_permissions": "allow: auto-approve these commands. deny: always block.",
+  "permissions": {
+    "allow": [
+      "Bash(make test)",
+      "Bash(make run)",
+      "Bash(make lint)",
+      "Bash(pytest *)",
+      "Bash(npm test *)",
+      "Bash(npm run lint *)",
+      "Bash(npm run build *)"
+    ],
+    "deny": [
+      "Bash(rm -rf /)",
+      "Bash(rm -rf ~)",
+      "Bash(git push --force *)",
+      "Bash(git push * --force *)",
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)"
+    ]
+  },
+
+  "hooks": {
+    "_comment_hooks": "Hooks are GUARANTEES, not suggestions. Exit 0=continue, Exit 2=block.",
+
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "_comment": "Block writes to .env, secrets, credentials",
+            "command": "python3 -c \"import json, sys; d=json.load(sys.stdin); p=d.get('tool_input',{}).get('file_path',''); sys.exit(2) if any(x in p for x in ['.env','.env.','secrets/','credentials']) else sys.exit(0)\""
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "_comment": "Block rm -rf /, force push, DROP TABLE/DATABASE",
+            "command": "python3 -c \"import json,sys,re; d=json.load(sys.stdin); cmd=d.get('tool_input',{}).get('command',''); patterns=[r'rm\\s+-rf\\s+[/~]', r'git\\s+push\\s+.*--force', r'DROP\\s+TABLE', r'DROP\\s+DATABASE']; sys.exit(2) if any(re.search(p,cmd,re.I) for p in patterns) else sys.exit(0)\""
+          }
+        ]
+      }
+    ],
+
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "_comment_python": "For Python projects: auto-format with black or ruff",
+            "_comment_js": "For JS/TS projects: replace with prettier",
+            "_example_python": "jq -r '.tool_input.file_path' | { read f; if echo \"$f\" | grep -q '\\.py$'; then black -q \"$f\" 2>/dev/null; fi; }",
+            "_example_js": "jq -r '.tool_input.file_path' | { read f; if echo \"$f\" | grep -qE '\\.(ts|tsx|js|jsx)$'; then npx prettier --write \"$f\" 2>/dev/null; fi; }",
+            "command": "echo 'placeholder: replace with your formatter'"
+          }
+        ]
+      }
+    ],
+
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "_comment": "Desktop notification when Claude awaits input",
+            "_example_mac": "jq -r '.message' | xargs -I{} osascript -e 'display notification \"{}\" with title \"Claude Code\"'",
+            "_example_linux": "jq -r '.message' | xargs -I{} notify-send 'Claude Code' '{}'",
+            "command": "echo 'placeholder: replace with your OS notification command'"
+          }
+        ]
+      }
+    ]
+  }
+}
